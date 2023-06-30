@@ -30,12 +30,12 @@ namespace ClientApp.Controllers
             return Ok(response);
         }
 
-        //[HttpGet]
-        //public async Task<ActionResult> Login(string username, string password)
-        //{
-        //    var requestBus = new RequestHandler<User>(new { }, Models.Enums.GeneralTypeOfRequest.UserLogin);
-        //    var response = await Task.FromResult(_client.SendRequest(requestBus));
-        //    return Ok(response);
-        //}
+        [HttpPost("Login")]
+        public async Task<ActionResult> Login(User user)
+        {
+            var requestBus = new RequestHandler<User>(user, Models.Enums.GeneralTypeOfRequest.UserLogin);
+            var response = await Task.FromResult(_client.SendRequest(requestBus));
+            return Ok(response);
+        }
     }
 }

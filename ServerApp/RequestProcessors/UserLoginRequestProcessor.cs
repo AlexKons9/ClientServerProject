@@ -1,4 +1,8 @@
-﻿using Models.Enums;
+﻿using ClientApp;
+using Microsoft.Azure.Cosmos;
+using Models;
+using Models.Enums;
+using Newtonsoft.Json;
 using RabbitMQ.RPC.Handler.Interfaces;
 using ServerApp.Services.Interfaces;
 using System;
@@ -23,9 +27,50 @@ namespace ServerApp.RequesrProcessors
             _userService = userService;
         }
 
-        public object ProcessRequest(object request)
+        public async Task<object> ProcessRequest(object request)
         {
-            throw new NotImplementedException();
+            var user = JsonConvert.DeserializeObject<Models.User>(request.ToString());
+            var username = user.UserName;
+            var password = user.Password;
+
+            await _loggingService.InsertLog(new Log()
+            {
+                Id = Guid.NewGuid().ToString(),
+                UserName = username,
+                Details = $"Attemting to Login - username: {username}",
+                DateOfLog = DateTime.Now,
+            });
+
+            try
+            {
+                var dbUser = await _userService.RetrieveSingleUser(username, password);
+
+                if (dbUser == null)
+                {
+                    return "Fail";
+                }
+
+                await _loggingService.InsertLog(new Log()
+                {
+                    Id = Guid.NewGuid().ToString(),
+                    UserName = username,
+                    Details = $"Logged in Successfully!",
+                    DateOfLog = DateTime.Now,
+                });
+
+                return dbUser;
+
+            }
+            catch (Exception ex)
+            {
+                await _loggingService.InsertLog(new Log()
+                {
+                    Id = Guid.NewGuid().ToString(),
+                    UserName = username,
+                    Details = ex.Message,
+                });
+                throw new Exception(ex.Message);
+            }
         }
     }
 }

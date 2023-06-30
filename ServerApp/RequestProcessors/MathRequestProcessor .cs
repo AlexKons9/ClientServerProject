@@ -23,7 +23,7 @@ namespace ServerApp.RequesrProcessors
             _loggingService = loggingService;
         }
 
-        public object ProcessRequest(object request)
+        public async Task<object> ProcessRequest(object request)
         {
             var req = JsonConvert.DeserializeObject<MathRequest>(request.ToString());
 
@@ -31,31 +31,44 @@ namespace ServerApp.RequesrProcessors
             var num1 = req.Numbers[0];
             var num2 = req.Numbers[1];
 
-            _loggingService.InsertLog(new Log()
+            await _loggingService.InsertLog(new Log()
             {
                 Id = Guid.NewGuid().ToString(),
                 Details = $"Attemting to {req.TypeOfRequest} - number: {num1} and number: {num2}",
                 DateOfLog = DateTime.Now,
             });
 
-            switch (requestType)
+            try
             {
-                case MathRequestType.Add:
-                    req.Result = Calculator.Add(num1, num2);
-                    break;
-                case MathRequestType.Subtract:
-                    req.Result = Calculator.Subtract(num1, num2);
-                    break;
-                case MathRequestType.Multiply:
-                    req.Result = Calculator.Multiply(num1, num2);
-                    break;
-                case MathRequestType.Divide:
-                    req.Result = Calculator.Divide(num1, num2);
-                    break;
-                default: throw new ArgumentException("Wrong type of request given.");
+                switch (requestType)
+                {
+                    case MathRequestType.Add:
+                        req.Result = Calculator.Add(num1, num2);
+                        break;
+                    case MathRequestType.Subtract:
+                        req.Result = Calculator.Subtract(num1, num2);
+                        break;
+                    case MathRequestType.Multiply:
+                        req.Result = Calculator.Multiply(num1, num2);
+                        break;
+                    case MathRequestType.Divide:
+                        req.Result = Calculator.Divide(num1, num2);
+                        break;
+                    default: throw new ArgumentException("Wrong type of request given.");
+                }
+            }
+            catch (ArgumentException ex)
+            {
+
+                throw new ArgumentException(ex.Message);
+            }
+            catch (Exception ex)
+            {
+
+                throw new Exception(ex.Message);
             }
 
-            _loggingService.InsertLog(new Log()
+            await _loggingService.InsertLog(new Log()
             {
                 Id = Guid.NewGuid().ToString(),
                 Details = $"Success of Calculation... The result is: {req.Result}",
