@@ -3,6 +3,7 @@ using Models;
 using Newtonsoft.Json;
 using RabbitMQ.RPC.Handler;
 using RabbitMQ.RPC.Handler.Interfaces;
+using System.Net;
 using System.Net.Sockets;
 
 // For more information on enabling Web API for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
@@ -33,6 +34,14 @@ namespace ClientApp.Controllers
         [HttpPost("Login")]
         public async Task<ActionResult> Login(User user)
         {
+            // we get the ip address but i dont store it somewhere 
+            string ip = Response.HttpContext.Connection.RemoteIpAddress.ToString();
+
+            if (ip == "::1")
+            {
+                ip = Dns.GetHostEntry(Dns.GetHostName()).AddressList[1].ToString();
+            }
+
             var requestBus = new RequestHandler<User>(user, Models.Enums.GeneralTypeOfRequest.UserLogin);
             var response = await Task.FromResult(_client.SendRequest(requestBus));
             return Ok(response);

@@ -32,7 +32,6 @@ namespace ServerApp.RequesrProcessors
             var user = JsonConvert.DeserializeObject<Models.User>(request.ToString());
             var username = user.UserName;
             var password = user.Password;
-
             await _loggingService.InsertLog(new Log()
             {
                 Id = Guid.NewGuid().ToString(),

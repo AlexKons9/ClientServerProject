@@ -1,3 +1,4 @@
+using Microsoft.AspNetCore.HttpOverrides;
 using RabbitMQ.RPC.Handler;
 using RabbitMQ.RPC.Handler.Interfaces;
 
@@ -12,6 +13,11 @@ namespace ClientApp
             // Add services to the container.
 
             builder.Services.AddControllers();
+            builder.Services.Configure<ForwardedHeadersOptions>(options => 
+            {
+                options.ForwardedHeaders =
+                    ForwardedHeaders.XForwardedFor | ForwardedHeaders.XForwardedProto;
+            });
             // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
             builder.Services.AddEndpointsApiExplorer();
             builder.Services.AddSwaggerGen();
@@ -25,6 +31,7 @@ namespace ClientApp
                 app.UseSwaggerUI();
             }
 
+            app.UseForwardedHeaders();
             app.UseHttpsRedirection();
 
             app.UseAuthorization();
