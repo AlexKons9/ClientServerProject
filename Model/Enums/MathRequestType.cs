@@ -1,6 +1,6 @@
-﻿namespace ClientApp
+﻿namespace Models.Enums
 {
-    public enum RequestType
+    public enum MathRequestType
     {
         Add,
         Subtract,

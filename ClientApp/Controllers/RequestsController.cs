@@ -1,4 +1,5 @@
 ﻿using Microsoft.AspNetCore.Mvc;
+using Models;
 using Newtonsoft.Json;
 using RabbitMQ.RPC.Handler;
 using RabbitMQ.RPC.Handler.Interfaces;
@@ -22,10 +23,19 @@ namespace ClientApp.Controllers
         }
 
         [HttpPost]
-        public ActionResult Post(Request request)
+        public async Task<ActionResult> Post(MathRequest request)
         {
-            var response =  _client.SendRequest(request);
+            var requestBus = new RequestHandler<MathRequest>(request, Models.Enums.GeneralTypeOfRequest.MathCalculation);
+            var response = await Task.FromResult(_client.SendRequest(requestBus));
             return Ok(response);
         }
+
+        //[HttpGet]
+        //public async Task<ActionResult> Login(string username, string password)
+        //{
+        //    var requestBus = new RequestHandler<User>(new { }, Models.Enums.GeneralTypeOfRequest.UserLogin);
+        //    var response = await Task.FromResult(_client.SendRequest(requestBus));
+        //    return Ok(response);
+        //}
     }
 }

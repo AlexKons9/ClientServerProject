@@ -1,6 +1,9 @@
 ﻿using RabbitMQ.RPC.Handler.Interfaces;
 using RabbitMQ.RPC.Handler;
 using Microsoft.Azure.Cosmos;
+using ServerApp.RequesrProcessors;
+using ServerApp.Services;
+using ServerApp.Services.Interfaces;
 
 namespace ServerApp
 {
@@ -8,22 +11,19 @@ namespace ServerApp
     {
         static async Task Main(string[] args)
         {
-            //await CosmosDBHandler.InitializeHandler();
-
-            //var user = new Models.User
-            //{
-            //    Id = Guid.NewGuid().ToString(),
-            //    UserName = "Kokos",
-            //    Password = "Rikos"
-            //};
-
-            ////await CosmosDBHandler.InsertUser(user);
-            //var res = await CosmosDBHandler.RetrieveSingleUser("Kokos", "Rikos");
+            var _context = new CosmosDBContext();
+            ILoggingService logger = new LoggingService(_context);
+            IUserService userService = new UserService(_context);
 
             //Console.WriteLine(res.UserName);
+            List<IRequestProcessor> requestProcessors = new List<IRequestProcessor>
+            {
+                new UserLoginRequestProcessor(logger,userService),
+                new MathRequestProcessor(logger)
+            };
 
             IConnectionProvider connectionProvider = new ConnectionProvider("amqp://guest:guest@localhost:5672");
-            IRPCServer rpcServer = new RPCServer(connectionProvider);
+            IRPCServer rpcServer = new RPCServer(connectionProvider, requestProcessors);
 
             Console.WriteLine("RPC Server started. Listening for requests...");
             rpcServer.StartListening();

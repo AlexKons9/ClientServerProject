@@ -1,8 +1,10 @@
 ﻿
 
+using Models.Enums;
+
 namespace ClientApp
 {
-    public class Request
+    public class MathRequest
     {
         public string? TypeOfRequest { get; set; }
         public int[]? Numbers { get; set; } = new int[2];
@@ -10,11 +12,11 @@ namespace ClientApp
 
 
 
-        public RequestType ParseRequestType(string typeOfRequest)
+        public MathRequestType ParseRequestType(string typeOfRequest)
         {
             try
             {
-                if (Enum.TryParse(typeOfRequest, out RequestType requestType))
+                if (Enum.TryParse(typeOfRequest, out MathRequestType requestType))
                 {
                     return requestType;
                 }
