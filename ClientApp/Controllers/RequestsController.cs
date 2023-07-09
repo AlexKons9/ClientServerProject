@@ -1,8 +1,10 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using Models;
+using Models.DTO;
 using Newtonsoft.Json;
 using RabbitMQ.RPC.Handler;
 using RabbitMQ.RPC.Handler.Interfaces;
+using ServerApp;
 using System.Net;
 using System.Net.Sockets;
 
@@ -24,9 +26,11 @@ namespace ClientApp.Controllers
         }
 
         [HttpPost]
-        public async Task<ActionResult> Post(MathRequest request)
+        public async Task<ActionResult> Math(MathRequestDTO request)
         {
-            var requestBus = new RequestHandler<MathRequest>(request, Models.Enums.GeneralTypeOfRequest.MathCalculation);
+            string ip = await GetIp();
+            request.LogInfo.IP = ip;
+            var requestBus = new RequestHandler<MathRequestDTO>(request, Models.Enums.GeneralTypeOfRequest.MathCalculation);
             var response = await Task.FromResult(_client.SendRequest(requestBus));
             return Ok(response);
         }
@@ -34,17 +38,43 @@ namespace ClientApp.Controllers
         [HttpPost("Login")]
         public async Task<ActionResult> Login(User user)
         {
-            // we get the ip address but i dont store it somewhere 
-            string ip = Response.HttpContext.Connection.RemoteIpAddress.ToString();
+            string ip = await GetIp();
+            var logInfo = new LogInfoDTO { UserName = user.UserName, IP = ip };
+            var userDTO = new UserDTO { User = user, LogInfo = logInfo };
 
-            if (ip == "::1")
-            {
-                ip = Dns.GetHostEntry(Dns.GetHostName()).AddressList[1].ToString();
-            }
-
-            var requestBus = new RequestHandler<User>(user, Models.Enums.GeneralTypeOfRequest.UserLogin);
+            var requestBus = new RequestHandler<UserDTO>(userDTO, Models.Enums.GeneralTypeOfRequest.UserLogin);
             var response = await Task.FromResult(_client.SendRequest(requestBus));
             return Ok(response);
         }
+
+        [HttpPost("Logs")]
+        public async Task<ActionResult> GetLogs(FetchLogsDTO data)
+        {
+            string ip = await GetIp();
+            data.LogInfo.IP = ip;   
+            var requestBus = new RequestHandler<FetchLogsDTO>(data, Models.Enums.GeneralTypeOfRequest.FetchLogs);
+            var response = await Task.FromResult(_client.SendRequest(requestBus));
+            return Ok(response);
+        }
+
+
+        // Gets the IP of user
+        [ApiExplorerSettings(IgnoreApi = true)]
+        [HttpGet]
+        public async Task<string?> GetIp()
+        {
+            string? ip = Response.HttpContext.Connection.RemoteIpAddress.ToString();
+
+            if (ip == "::1" || ip == "127.0.0.1")
+            {
+                ip = Dns.GetHostEntry(Dns.GetHostName())
+                        .AddressList
+                        .FirstOrDefault(address => address.AddressFamily == System.Net.Sockets.AddressFamily.InterNetwork)
+                        ?.ToString();
+            }
+
+            return await Task.FromResult(ip);
+        }
+
     }
 }

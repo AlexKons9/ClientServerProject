@@ -1,4 +1,5 @@
 ﻿using ClientApp;
+using Models.DTO;
 using Models.Enums;
 using Newtonsoft.Json;
 using RabbitMQ.RPC.Handler.Interfaces;
@@ -25,17 +26,24 @@ namespace ServerApp.RequesrProcessors
 
         public async Task<object> ProcessRequest(object request)
         {
-            var req = JsonConvert.DeserializeObject<MathRequest>(request.ToString());
+            var req = JsonConvert.DeserializeObject<MathRequestDTO>(request.ToString());
+            var mathReq = req.MathRequest;
+            var logInfo = req.LogInfo;
+            
+            if (logInfo != null) { }
 
-            var requestType = req.ParseRequestType(req.TypeOfRequest);
-            var num1 = req.Numbers[0];
-            var num2 = req.Numbers[1];
+
+            var requestType = mathReq.ParseRequestType(mathReq.TypeOfRequest);
+            var num1 = mathReq.Numbers[0];
+            var num2 = mathReq.Numbers[1];
 
             await _loggingService.InsertLog(new Log()
             {
                 Id = Guid.NewGuid().ToString(),
-                Details = $"Attemting to {req.TypeOfRequest} - number: {num1} and number: {num2}",
+                Details = $"Attemting to {mathReq.TypeOfRequest} - number: {num1} and number: {num2}",
                 DateOfLog = DateTime.Now,
+                UserName = logInfo.UserName,
+                IP = logInfo.IP
             });
 
             try
@@ -43,36 +51,53 @@ namespace ServerApp.RequesrProcessors
                 switch (requestType)
                 {
                     case MathRequestType.Add:
-                        req.Result = Calculator.Add(num1, num2);
+                        mathReq.Result = Calculator.Add(num1, num2);
                         break;
                     case MathRequestType.Subtract:
-                        req.Result = Calculator.Subtract(num1, num2);
+                        mathReq.Result = Calculator.Subtract(num1, num2);
                         break;
                     case MathRequestType.Multiply:
-                        req.Result = Calculator.Multiply(num1, num2);
+                        mathReq.Result = Calculator.Multiply(num1, num2);
                         break;
                     case MathRequestType.Divide:
-                        req.Result = Calculator.Divide(num1, num2);
+                        mathReq.Result = Calculator.Divide(num1, num2);
                         break;
                     default: throw new ArgumentException("Wrong type of request given.");
                 }
             }
             catch (ArgumentException ex)
             {
+                await _loggingService.InsertLog(new Log()
+                {
+                    Id = Guid.NewGuid().ToString(),
+                    Details = $"Error: {ex.Message}",
+                    DateOfLog = DateTime.Now,
+                    UserName = logInfo.UserName,
+                    IP = logInfo.IP
+                });
 
                 throw new ArgumentException(ex.Message);
             }
             catch (Exception ex)
             {
-
+                await _loggingService.InsertLog(new Log()
+                {
+                    Id = Guid.NewGuid().ToString(),
+                    Details = $"Error: {ex.Message}",
+                    DateOfLog = DateTime.Now,
+                    UserName = logInfo.UserName,
+                    IP = logInfo.IP
+                });
                 throw new Exception(ex.Message);
             }
 
             await _loggingService.InsertLog(new Log()
             {
                 Id = Guid.NewGuid().ToString(),
-                Details = $"Success of Calculation... The result is: {req.Result}",
+                Details = $"Success of Calculation... The result is: {mathReq.Result}",
                 DateOfLog = DateTime.Now,
+                UserName = logInfo.UserName,
+                IP = logInfo.IP
             });
 
             return req;

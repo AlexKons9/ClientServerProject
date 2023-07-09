@@ -12,6 +12,7 @@ namespace Models
         public T Data { get; set; }
         public GeneralTypeOfRequest Type { get; set; }
 
+
         public RequestHandler(T data, GeneralTypeOfRequest type)
         {
             Data = data;

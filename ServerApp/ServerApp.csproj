@@ -13,7 +13,8 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\..\RabbitMQ.RPC.Handler\RabbitMQ.RPC.Handler.csproj" />
+    <ProjectReference Include="..\Model\Models.csproj" />
+    <ProjectReference Include="..\RabbitMQ.RPC.Handler\RabbitMQ.RPC.Handler.csproj" />
   </ItemGroup>
 
 </Project>

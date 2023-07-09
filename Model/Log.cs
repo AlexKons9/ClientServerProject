@@ -21,5 +21,6 @@ namespace ServerApp
         public string? IP { get; set; }
         [JsonProperty("duration")]
         public TimeSpan? Duration { get; set; }
+
     }
 }

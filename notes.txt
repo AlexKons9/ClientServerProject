@@ -1,4 +1,2 @@
-- Have to pass object from the client to server and back
-- Caclulator Methods
-- Save the results to a NoSql Server
-- 
+Things to fix: 
+- frontend

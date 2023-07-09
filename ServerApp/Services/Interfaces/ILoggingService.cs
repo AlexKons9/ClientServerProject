@@ -9,6 +9,6 @@ namespace ServerApp.Services.Interfaces
     public interface ILoggingService
     {
         Task InsertLog(Log log);
-        Task<IList<Log>> RetrieveLogsBetweenTimeSpan(DateTime Start, DateTime Stop);
+        Task<IEnumerable<Log>> RetrieveLogsBetweenTimeSpan(DateTime startTime, DateTime endTime);
     }
 }

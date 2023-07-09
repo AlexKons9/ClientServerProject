@@ -7,7 +7,7 @@ namespace ClientApp
     public class MathRequest
     {
         public string? TypeOfRequest { get; set; }
-        public int[]? Numbers { get; set; } = new int[2];
+        public decimal[]? Numbers { get; set; } = new decimal[2];
         public decimal Result { get; set; }
 
 

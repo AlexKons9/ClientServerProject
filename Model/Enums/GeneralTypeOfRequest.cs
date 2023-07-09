@@ -3,6 +3,7 @@
     public enum GeneralTypeOfRequest
     {
         UserLogin,
-        MathCalculation
+        MathCalculation,
+        FetchLogs
     }
 }

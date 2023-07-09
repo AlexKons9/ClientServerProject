@@ -1,6 +1,7 @@
 ﻿using ClientApp;
 using Microsoft.Azure.Cosmos;
 using Models;
+using Models.DTO;
 using Models.Enums;
 using Newtonsoft.Json;
 using RabbitMQ.RPC.Handler.Interfaces;
@@ -29,7 +30,12 @@ namespace ServerApp.RequesrProcessors
 
         public async Task<object> ProcessRequest(object request)
         {
-            var user = JsonConvert.DeserializeObject<Models.User>(request.ToString());
+            var userDTO = JsonConvert.DeserializeObject<UserDTO>(request.ToString());
+            //var logInfo = JsonConvert.DeserializeObject<LogInfoDTO>(userDTO.LogInfo.ToString());
+
+            var userIP = userDTO.LogInfo.IP;
+            var user = userDTO.User;
+
             var username = user.UserName;
             var password = user.Password;
             await _loggingService.InsertLog(new Log()
@@ -38,6 +44,7 @@ namespace ServerApp.RequesrProcessors
                 UserName = username,
                 Details = $"Attemting to Login - username: {username}",
                 DateOfLog = DateTime.Now,
+                IP = userIP
             });
 
             try
@@ -55,6 +62,7 @@ namespace ServerApp.RequesrProcessors
                     UserName = username,
                     Details = $"Logged in Successfully!",
                     DateOfLog = DateTime.Now,
+                    IP = userIP
                 });
 
                 return dbUser;
@@ -67,6 +75,8 @@ namespace ServerApp.RequesrProcessors
                     Id = Guid.NewGuid().ToString(),
                     UserName = username,
                     Details = ex.Message,
+                    DateOfLog = DateTime.Now,
+                    IP = userIP
                 });
                 throw new Exception(ex.Message);
             }

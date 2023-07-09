@@ -3,6 +3,7 @@ using ServerApp.Services.Interfaces;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Runtime.Serialization;
 using System.Text;
 using System.Threading.Tasks;
 
@@ -55,11 +56,18 @@ namespace ServerApp.Services
 
         }
 
-        public async Task<IList<Log>> RetrieveLogsBetweenTimeSpan(DateTime Start, DateTime Stop)
+        public async Task<IEnumerable<Log>> RetrieveLogsBetweenTimeSpan(DateTime startTime, DateTime endTime)
         {
-            var query = $"SELECT * FROM LoggingContainer WHERE LoggingContainer.dateoflog > \"{Start}\" AND LoggingContainer.dateoflog > \"{Stop}\"";
-            var iterator = _context.logContainer.GetItemQueryIterator<Log>(query);
-            var res = await iterator.ReadNextAsync();
+            string sqlQuery = $"SELECT * FROM c WHERE c.dateoflog >= @startDate AND c.dateoflog <= @endDate";
+            QueryDefinition queryDefinition = new QueryDefinition(sqlQuery)
+                .WithParameter("@startDate", startTime)
+                .WithParameter("@endDate", endTime);
+
+
+            //var query = $"SELECT * FROM LoggingContainer WHERE LoggingContainer.dateoflog >= \"2023-06-30T16:35:04.0799625+03:00\" " +
+            //    $"AND LoggingContainer.dateoflog <= \"2023-06-30T18:18:04.9781537+03:00\"";
+            var iterator = _context.logContainer.GetItemQueryIterator<Log>(queryDefinition);
+            var res = await iterator.ReadNextAsync();   
             return res.ToList();
         }
     }
