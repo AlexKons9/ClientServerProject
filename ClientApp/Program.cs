@@ -18,6 +18,16 @@ namespace ClientApp
                 options.ForwardedHeaders =
                     ForwardedHeaders.XForwardedFor | ForwardedHeaders.XForwardedProto;
             });
+
+            builder.Services.AddCors(options =>
+            {
+                options.AddPolicy("MyPolicy", builder =>
+                    {
+                        builder.AllowAnyOrigin().AllowAnyHeader();
+                    });
+
+            });
+
             // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
             builder.Services.AddEndpointsApiExplorer();
             builder.Services.AddSwaggerGen();
@@ -33,7 +43,7 @@ namespace ClientApp
 
             app.UseForwardedHeaders();
             app.UseHttpsRedirection();
-
+            app.UseCors("MyPolicy");
             app.UseAuthorization();
 
 

@@ -120,31 +120,6 @@ namespace RabbitMQ.RPC.Handler
                 // If no request processor is found for the request type, return an error response
                 return "Error: No request processor found for the request type.";
             }
-
-
-            //var requestType = request.ParseRequestType(request.TypeOfRequest);
-            //var num1 = request.Numbers[0];
-            //var num2 = request.Numbers[1];
-
-            //switch (requestType)
-            //{
-            //    case MathRequestType.Add:
-            //        request.Result = num1 + num2;
-            //        break;
-            //    case MathRequestType.Subtract:
-            //        request.Result = num1 - num2;
-            //        break;
-            //    case MathRequestType.Multiply:
-            //        request.Result = num1 * num2;
-            //        break;
-            //    case MathRequestType.Divide:
-            //        request.Result = num1 / num2;
-            //        break;
-            //    default:
-            //        break;
-            //}
-
-            //return request;
         }
 
 

@@ -1,13 +1,17 @@
 ﻿
 
 using Models.Enums;
+using Newtonsoft.Json;
 
 namespace ClientApp
 {
     public class MathRequest
     {
+        [JsonProperty("typeOfRequest")]
         public string? TypeOfRequest { get; set; }
+        [JsonProperty("numbers")]
         public decimal[]? Numbers { get; set; } = new decimal[2];
+        [JsonProperty("result")]
         public decimal Result { get; set; }
 
 

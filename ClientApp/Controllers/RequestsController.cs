@@ -25,7 +25,7 @@ namespace ClientApp.Controllers
             _client = new RPCClient(_connectionProvider);
         }
 
-        [HttpPost]
+        [HttpPost("Math")]
         public async Task<ActionResult> Math(MathRequestDTO request)
         {
             string ip = await GetIp();

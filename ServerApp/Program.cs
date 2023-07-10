@@ -12,11 +12,14 @@ namespace ServerApp
     {
         static async Task Main(string[] args)
         {
+            // Initialize DB 
             var _context = new CosmosDBContext();
+
+            // Initialize all services we need with context
             ILoggingService logger = new LoggingService(_context);
             IUserService userService = new UserService(_context);
 
-            //Console.WriteLine(res.UserName);
+            // Create a list of the processes that the server will do
             List<IRequestProcessor> requestProcessors = new List<IRequestProcessor>
             {
                 new UserLoginRequestProcessor(logger,userService),
@@ -24,7 +27,9 @@ namespace ServerApp
                 new FetchLogsRequestProcessor(logger),
             };
 
+            // Connect to the message broker
             IConnectionProvider connectionProvider = new ConnectionProvider("amqp://guest:guest@localhost:5672");
+            // Create Server
             IRPCServer rpcServer = new RPCServer(connectionProvider, requestProcessors);
 
             Console.WriteLine("RPC Server started. Listening for requests...");
