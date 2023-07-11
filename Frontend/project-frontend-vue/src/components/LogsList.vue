@@ -26,14 +26,15 @@
         <h2>Log Entries:</h2>
         <ul>
           <li
+            class="item"
             v-for="log in logs"
             :key="log.id"
           >
-            <p>Username: {{ log.username }}</p>
-            <p>Details: {{ log.details }}</p>
-            <p>Date of Log: {{ log.dateoflog }}</p>
-            <p>IP: {{ log.ip }}</p>
-            <p>Duration: {{ log.duration }}</p>
+            <p><span class="title">Username:</span> {{ log.username }}</p>
+            <p><span class="title">Details:</span> {{ log.details }}</p>
+            <p><span class="title">Date of Log:</span> {{ log.dateoflog }}</p>
+            <p><span class="title">IP:</span> {{ log.ip }}</p>
+            <!-- <p>Duration: {{ log.duration }}</p> -->
           </li>
         </ul>
       </div>
@@ -82,6 +83,15 @@
   </script>
   
   <style scoped>
-  /* CSS styles */
+   .item{
+    margin-bottom: 0.5rem;
+    padding: 5px;
+    border: 1px solid #c1c1c1;
+    border-radius: 5px;
+   }
+   .title{
+    color: yellow;
+    font-weight: 600;
+   }
   </style>
   

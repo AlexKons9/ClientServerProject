@@ -62,8 +62,10 @@ async function performCalculation() {
     const data = response.data;
     console.log(data.mathRequest.result);
     result.value = data.mathRequest.result;
+    errorMessage.value = '';
   } catch (error) {
     errorMessage.value = "An error occurred while performing the calculation.";
+    result.value = '';
     console.error(error);
   }
 
